@@ -32,5 +32,10 @@ public class InverseIndex implements Serializable, Writable {
 		new Text(document).write(arg0);
 		new IntWritable(pos).write(arg0);		
 	}
+	
+	public InverseIndex(String document, int pos) {
+		this.document = document;
+		this.pos = pos;
+	}
 
 }
