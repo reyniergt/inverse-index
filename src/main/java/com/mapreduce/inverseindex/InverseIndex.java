@@ -38,4 +38,18 @@ public class InverseIndex implements Serializable, Writable {
 		this.pos = pos;
 	}
 
+	public InverseIndex() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+
+	@Override
+	public String toString() {
+		
+		return "{ " + document + " : " + pos + " }";
+	}
+	
+	
+	
+
 }

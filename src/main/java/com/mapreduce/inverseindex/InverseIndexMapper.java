@@ -3,14 +3,12 @@ package com.mapreduce.inverseindex;
 import java.io.IOException;
 import java.util.StringTokenizer;
 
+import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
-import org.apache.hadoop.mapred.FileSplit;
-import org.apache.hadoop.mapred.MapReduceBase;
-import org.apache.hadoop.mapred.Mapper;
-import org.apache.hadoop.mapred.OutputCollector;
-import org.apache.hadoop.mapred.Reporter;
+import org.apache.hadoop.mapreduce.lib.input.FileSplit;
+import org.apache.hadoop.mapreduce.Mapper;
 
-public class InverseIndexMapper extends MapReduceBase implements Mapper<Text, Text, Text, InverseIndex> {
+public class InverseIndexMapper extends Mapper<LongWritable, Text, Text, InverseIndex> {
 	
 	private String sanitize(String word) {
 		return word
@@ -24,11 +22,11 @@ public class InverseIndexMapper extends MapReduceBase implements Mapper<Text, Te
                 .toLowerCase().trim();
 	}
 
-	public void map(Text key, Text value,
-			OutputCollector<Text, InverseIndex> output, Reporter reporter)
-			throws IOException {
-		
-		FileSplit fileSplit = (FileSplit) reporter.getInputSplit();
+	@Override
+	protected void map(LongWritable key, Text value,
+			Mapper<LongWritable, Text, Text, InverseIndex>.Context context)
+			throws IOException, InterruptedException {
+		FileSplit fileSplit = (FileSplit) context.getInputSplit();
 		String fileName = fileSplit.getPath().getName();
 		
 		String line = value.toString();
@@ -38,8 +36,10 @@ public class InverseIndexMapper extends MapReduceBase implements Mapper<Text, Te
 		while (tokenizer.hasMoreTokens()) {
 			String token = tokenizer.nextToken();
 			String word = sanitize(token);
-			output.collect(new Text(word), new InverseIndex(fileName, pos++));
+			context.write(new Text(word), new InverseIndex(fileName, pos++));
 		}
 	}
+	
+	
 
 }
